@@ -1,69 +1,37 @@
-fun fnd prop [] = []
-|   fnd prop(x::xs) = if
-
-fun filter p []      = []
-|   filter p (x::xs) = if p x then x :: filter p xs else filter p xs
+(* Imprimir la tabla de verdad de una proposición con variables *)
+fun FND prop =
+    let
+      (* variables de trabajo *)
+      val variables = vars prop
+      val n = length variables
+      val lista_combinaciones_booleanas = gen_bools n
+	  (*val lista_trues = recorrerFND lista_combinaciones_booleanas*)
+      (* generar evaluaciones de la proposición*)
+	  fun devolverVariable (var, bool) = 
+	  	if bool then variable(var) else negacion(variable(var))
+		  ;
+      fun recorrerFND []                  = []  (* toque final a la impresión; previamente mostramos hileras con el resultado *)
+    |   recorrerFND (fila :: mas_filas) = 
+            let
+                val asociacion = as_vals variables fila
+				val resultados = recorrerFND mas_filas
+				val resultadoActual = evalProp asociacion prop
+				val respuesta = map devolverVariable asociacion
+                in
+                  if resultadoActual = true then 
+				  	respuesta::resultados 
+				  else 
+				  	resultados
+              end
+      fun gc [] = constante(false)
+      |   gc [x] = x
+      |   gc (x::y::resto) = conjuncion(x, gc(y::resto))
+      fun gd [] = constante(true)
+      |   gd [x] = x
+      |   gd (x::y::resto) = disyuncion(x, gd(y::resto))
+      val lista_trues = recorrerFND lista_combinaciones_booleanas
+      val lista_conjunciones = map gc(lista_trues)
+    in
+        gd lista_conjunciones
+    end
 ;
-
-fun revisarTipo prop =
-    case prop of
-        disyuncion(_,_)
-            => true
-    |   _ => false
-    ;
-
-fun revisarNegacion
-
-fun distribucionDoble (disyuncion(var1, var2), disyuncion(var3, var4)) =
-    disyuncion(conjuncion(var1, var3), conjuncion(var2, var4))
-    ;
-
-fun distribucionSimple (disyuncion(vars1, vars2), prop2) =
-    disyuncion(conjuncion(vars1, prop2), conjuncion(vars2, prop2))
-    ;
-
-fnd(conjuncion(disyuncion(variable "a", variable "b"), disyuncion(variable "c", variable "d")));
-
-fun fnd prop =
-	  case prop of
-	    constante var
-	       => constante var
-      | variable var
-	       => variable var
-	  | negacion prop1
-	       => let val vars = fnd prop1
-           in case vars of 
-           negacion prop1 => prop1
-           | _ => negacion(vars)
-           end
-	  | conjuncion (prop1, prop2)
-	       => let val vars1 = fnd prop1
-	              and vars2 = fnd prop2
-	          in 
-                if revisarTipo vars1 = true then
-                    if revisarTipo vars2 = true then
-                        distribucionDoble(vars1, vars2)
-                    else
-                        distribucionSimple(vars1, vars2)
-                else 
-                    if revisarTipo vars2 = true then
-                        distribucionSimple(vars2, vars1)
-                    else
-                     conjuncion(vars1, vars2)
-	          end
-	  | disyuncion (prop1, prop2)
-	       => let val vars1 = fnd prop1
-	              and vars2 = fnd prop2
-	          in  disyuncion(vars1, vars2)
-	          end
-	  | implicacion (prop1, prop2)
-	       => let val vars1 = fnd prop1
-	              and vars2 = fnd prop2
-	          in  disyuncion(negacion(vars1), vars2)
-	          end
-	  | equivalencia (prop1, prop2)
-	       => let val vars1 = fnd prop1
-	              and vars2 = fnd prop2
-	          in  conjuncion(disyuncion(negacion(vars1), vars2), disyuncion(negacion(vars2), vars1))
-	          end
-              ;
