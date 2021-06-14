@@ -1,4 +1,9 @@
 use "codigo/sintax.sml";
+use "codigo/vars.sml";
+use "codigo/gen_bools.sml";
+use "codigo/as_vals.sml";
+use "codigo/evalProp.sml";
+use "codigo/taut.sml";
 
 val pru5 = conjuncion(implicacion(conjuncion(variable "a", variable "b"),
                            conjuncion(variable "x", variable "y")),
@@ -28,13 +33,13 @@ fun bonita prop =
 			val izq = discriminante (prop1, 1) and der = discriminante (prop2, 1)
 			in 
 				(if izq then "("else "") ^ bonita prop1 ^ (if izq then ")"else "") ^ 
-				" \\/ "^ (if der then "("else "") ^ bonita prop2 ^ (if der then ")"else "")
+				" /\\ "^ (if der then "("else "") ^ bonita prop2 ^ (if der then ")"else "")
 			end
 		|   disyuncion (prop1,prop2)	=> let
 			val izq = discriminante (prop1,2) and der = discriminante (prop2,2)
 			in 
 				(if izq then "("else "") ^ bonita prop1 ^ (if izq then ")"else "") ^ 
-				" /\\ "^ (if der then "("else "") ^ bonita prop2 ^ (if der then ")"else "")
+				" \\/ "^ (if der then "("else "") ^ bonita prop2 ^ (if der then ")"else "")
 			end
 		|   implicacion (prop1,prop2)	=> let
 			val izq = discriminante (prop1,3) and der = discriminante (prop2,3)
