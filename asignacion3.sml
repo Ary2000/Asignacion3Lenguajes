@@ -58,11 +58,11 @@ fun bonita prop =
 
 fun simpl prop =
 	case prop 
-	of	implicacion(prop1,prop2)=>conjuncion(simpl (negacion prop1),simpl prop2)
+	of	implicacion(prop1,prop2)=>disyuncion(simpl (negacion prop1),simpl prop2)
 	|	negacion (negacion prop1)=>simpl prop1
 	|	negacion (conjuncion(prop1,prop2))=>disyuncion(simpl (negacion prop1),simpl (negacion prop2))
 	| 	negacion (disyuncion(prop1,prop2))=>conjuncion(simpl (negacion prop1),simpl (negacion prop2))
-	|	negacion (implicacion(prop1,prop2))=>disyuncion(simpl prop1,simpl (negacion prop2))
+	|	negacion (implicacion(prop1,prop2))=>conjuncion(simpl prop1,simpl (negacion prop2))
 	|	conjuncion(prop1,prop2)=>
 		let val simProp1=simpl prop1 and simProp2=simpl prop2
 		in if simProp1=simProp2 then simProp1 else 
